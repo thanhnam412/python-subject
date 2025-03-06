@@ -5,15 +5,9 @@ __pycache__/
 *.pyd
 
 # Virtual environment
-venv/
-.env
 .venv/
-env/
-ENV/
-*.env
+.env
 *.venv
-*.egg-info/
-*.egg
 
 # Logs and databases
 instance/
@@ -36,10 +30,6 @@ instance/
 
 # macOS specific
 .DS_Store
-
-# Node modules (if using frontend with Flask)
-node_modules/
-npm-debug.log
 
 # Python dependencies
 requirements.txt
