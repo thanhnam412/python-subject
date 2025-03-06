@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+.venv/
+env/
+ENV/
+*.env
+*.venv
+*.egg-info/
+*.egg
+
+# Logs and databases
+instance/
+*.sqlite3
+*.db
+*.sqlite
+
+# Cache files
+.cache/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Flask specific
+*.log
+instance/
+.wsgi.py.swp
+
+# VS Code settings
+.vscode/
+
+# macOS specific
+.DS_Store
+
+# Node modules (if using frontend with Flask)
+node_modules/
+npm-debug.log
+
+# Python dependencies
+requirements.txt
+Pipfile
+Pipfile.lock
+
+# Docker files (if using Docker)
+docker-compose.override.yml
