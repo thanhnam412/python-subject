@@ -1,0 +1,9 @@
+[project]
+name = "my_project"
+version = "0.1.0"
+description = "A simple Flask app with PostgreSQL"
+dependencies = [
+  "psycopg2",
+  "flask",
+  "flask-cors" 
+]

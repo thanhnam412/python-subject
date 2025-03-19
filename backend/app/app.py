@@ -1,26 +1,21 @@
 from flask import Flask
 from markupsafe import escape
+from init import get_db_connection
+
+
 app = Flask(__name__)
+conn = get_db_connection()
+
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return {"message": "Hello"}
 
-@app.route('/user/<username>')
+
+@app.route("/user/<username>")
 def show_user_profile(username):
-    return f'User {escape(username)}'
+    return f"User {escape(username)}"
 
-# app = Flask(__name__)
-
-# def get_db_connection():
-#     conn = psycopg2.connect(
-#         host="localhost",
-#         port="5432",
-#         user="cps",
-#         password="password",
-#         database="database_name",
-#     )
-#     return conn
 
 # @app.route('/')
 # def index():
@@ -32,5 +27,6 @@ def show_user_profile(username):
 #     conn.close()
 #     return f"Danh sách người dùng: {users}"
 
+
 if __name__ == "__main__":
-    app.run( host="localhost", port="8080" )
+    app.run(host="localhost", port="8080", debug=True)
