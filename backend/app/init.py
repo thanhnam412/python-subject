@@ -1,5 +1,4 @@
 import os
-import psycopg2
 
 host = "localhost"
 
@@ -30,4 +29,3 @@ def get_db_connection():
         return conn
     except:
         print("--> connect fail")
-        return conn
