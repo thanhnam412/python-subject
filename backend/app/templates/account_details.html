@@ -1,0 +1,47 @@
+{% extends 'base.html' %} {% block title %} Chi Tiết Tài Khoản {% endblock %} {%
+block content %}
+<div class="main-content">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4>QUẢN LÝ CHI TIÊU</h4>
+    <a href="{{ url_for('views.home') }}"
+      ><i class="fas fa-home"></i> Tổng quan</a
+    >
+    <a href="{{ url_for('views.balance') }}" class="active"
+      ><i class="fas fa-wallet"></i> Số dư</a
+    >
+    <a href="{{ url_for('views.list_transactions') }}"
+      ><i class="fas fa-exchange-alt"></i> Giao dịch</a
+    >
+    <a href="#"><i class="fas fa-file-invoice"></i> Hóa đơn</a>
+    <a href="{{ url_for('views.list_categories') }}"
+      ><i class="fas fa-money-bill-wave"></i> Chi phí</a
+    >
+    <a href="#"><i class="fas fa-bullseye"></i> Mục tiêu</a>
+    <a href="#"><i class="fas fa-cog"></i> Cài đặt</a>
+    <a href="{{ url_for('views.logout') }}"
+      ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+    >
+  </div>
+
+  <!-- Nội dung chính -->
+  <div class="content">
+    <h1>Chi Tiết Tài Khoản</h1>
+    <div class="card p-3">
+      <h3>{{ account.account_type }}</h3>
+      <p><strong>Số tài khoản:</strong> {{ account.account_number }}</p>
+      <p><strong>Số dư:</strong> ${{ account.balance }}</p>
+      <img
+        src="{{ account.logo_url }}"
+        alt="{{ account.account_type }}"
+        style="width: 50px"
+      />
+      <p>
+        <a href="{{ url_for('views.balance') }}"
+          >Quay lại danh sách tài khoản</a
+        >
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
