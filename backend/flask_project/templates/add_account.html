@@ -1,0 +1,89 @@
+{% extends 'base.html' %} {% block title %} Thêm tài khoản {% endblock %} {%
+block content %}
+<div class="main-content">
+  <div class="sidebar">
+    <h4>QUẢN LÝ CHI TIÊU</h4>
+    <a href="{{ url_for('views.home') }}" class="active"
+      ><i class="fas fa-home"></i> Tổng quan</a
+    >
+    <a href="{{ url_for('views.balance') }}"
+      ><i class="fas fa-wallet"></i> Số dư</a
+    >
+    <a href="{{ url_for('views.list_transactions') }}"
+      ><i class="fas fa-exchange-alt"></i> Giao dịch</a
+    >
+    <a href="#"><i class="fas fa-file-invoice"></i> Hóa đơn</a>
+    <a href="{{ url_for('views.list_categories') }}"
+      ><i class="fas fa-money-bill-wave"></i> Chi phí</a
+    >
+    <a href="#"><i class="fas fa-bullseye"></i> Mục tiêu</a>
+    <a href="#"><i class="fas fa-cog"></i> Cài đặt</a>
+    <a href="{{ url_for('views.logout') }}"
+      ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+    >
+    <div class="user-profile">
+      <p>{{ username }}</p>
+      <a href="#" class="btn btn-success btn-sm">View profile</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <div>
+        <h5>Thêm tài khoản</h5>
+      </div>
+      <div>
+        <input type="text" placeholder="Search here" />
+        <i class="fas fa-bell notification-icon"></i>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <form method="POST" action="{{ url_for('views.add_account') }}">
+        <div class="mb-3">
+          <label for="account_type" class="form-label">Loại tài khoản</label>
+          <input
+            type="text"
+            class="form-control"
+            id="account_type"
+            name="account_type"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="balance" class="form-label">Số dư</label>
+          <input
+            type="number"
+            step="0.01"
+            class="form-control"
+            id="balance"
+            name="balance"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="account_number" class="form-label">Số tài khoản</label>
+          <input
+            type="text"
+            class="form-control"
+            id="account_number"
+            name="account_number"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="logo_url" class="form-label">URL Logo</label>
+          <input
+            type="text"
+            class="form-control"
+            id="logo_url"
+            name="logo_url"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-success">Thêm tài khoản</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

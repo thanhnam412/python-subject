@@ -1,0 +1,324 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %} {% block title %} Quản lý chi tiêu - Tổng quan {%
+endblock %} {% block content %}
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4 class="sidebar-title">QUẢN LÝ CHI TIÊU</h4>
+    <ul class="nav-list">
+      <li>
+        <a
+          href="{{ url_for('views.home') }}"
+          class="{% if request.path == url_for('views.home') %}active{% endif %}"
+        >
+          <i class="fas fa-home"></i> Tổng quan
+        </a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('views.balance') }}"
+          class="{% if request.path == url_for('views.balance') %}active{% endif %}"
+        >
+          <i class="fas fa-wallet"></i> Số dư
+        </a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('views.list_transactions') }}"
+          class="{% if request.path == url_for('views.list_transactions') %}active{% endif %}"
+        >
+          <i class="fas fa-exchange-alt"></i> Giao dịch
+        </a>
+      </li>
+      <li>
+        <a href="#" class="{% if request.path == '#' %}active{% endif %}">
+          <i class="fas fa-file-invoice"></i> Hóa đơn
+        </a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('views.list_categories') }}"
+          class="{% if request.path == url_for('views.list_categories') %}active{% endif %}"
+        >
+          <i class="fas fa-money-bill-wave"></i> Chi phí
+        </a>
+      </li>
+      <li>
+        <a href="#" class="{% if request.path == '#' %}active{% endif %}">
+          <i class="fas fa-bullseye"></i> Mục tiêu
+        </a>
+      </li>
+      <li>
+        <a href="#" class="{% if request.path == '#' %}active{% endif %}">
+          <i class="fas fa-cog"></i> Cài đặt
+        </a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('auth.logout') }}"
+          class="{% if request.path == url_for('auth.logout') %}active{% endif %}"
+        >
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+      </li>
+    </ul>
+    <div class="user-profile">
+      <p>{{ username }}</p>
+      <a href="#" class="btn btn-success btn-sm">View profile</a>
+    </div>
+  </div>
+
+  <!-- Nội dung chính -->
+  <div class="content">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h5>Hello {{ username }}</h5>
+      </div>
+      <div>
+        <input type="text" placeholder="Search here" />
+        <i class="fas fa-bell notification-icon"></i>
+      </div>
+    </div>
+
+    <!-- Hàng 1 -->
+    <div class="row mb-4">
+      <!-- Tổng số dư -->
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Tổng số dư</h5>
+            <a
+              href="{{ url_for('views.add_account') }}"
+              class="btn btn-success btn-sm"
+              >Thêm</a
+            >
+          </div>
+          <h3>${{ total_balance }}</h3>
+          {% if accounts %}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <p class="text-muted">Account Type</p>
+              <p class="text-muted">Credit Card</p>
+              <h5>${{ accounts[0].balance }}</h5>
+            </div>
+            <img
+              src="{{ accounts[0].logo_url }}"
+              alt="Account Logo"
+              style="width: 50px"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-light">Previous</button>
+            <button class="btn btn-light">Next</button>
+          </div>
+          {% else %}
+          <p class="text-muted">Không có tài khoản nào.</p>
+          {% endif %}
+        </div>
+      </div>
+      <!-- Mục tiêu -->
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Mục tiêu</h5>
+            <a
+              href="{{ url_for('views.add_goal') }}"
+              class="btn btn-success btn-sm"
+              >Thêm</a
+            >
+          </div>
+          <h3>${{ goal.budget if goal else '0' }}</h3>
+          <p class="text-muted">Đã đặt được mục tiêu</p>
+          <h5>${{ goal.progress if goal else '0' }}</h5>
+          <div class="progress mt-2">
+            <div
+              class="progress-bar bg-success"
+              role="progressbar"
+              style="width: {{ goal.progress_percentage if goal else 0 }}%"
+              aria-valuenow="{{ goal.progress_percentage if goal else 0 }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+          <p class="text-muted mt-2">
+            Mục tiêu tháng này: ${{ goal.budget if goal else '0' }}
+          </p>
+          <p class="text-muted">Còn lại vì là Thanh toán trước</p>
+        </div>
+      </div>
+      <!-- Hóa đơn sắp hết hạn -->
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Hóa đơn sắp hết hạn</h5>
+            <a
+              href="{{ url_for('views.add_bill') }}"
+              class="btn btn-success btn-sm"
+              >Thêm</a
+            >
+          </div>
+          {% if bills %}
+          <ul class="list-unstyled mt-3">
+            {% for bill in bills %}
+            <li class="d-flex justify-content-between">
+              <div>
+                <p>{{ bill.description }}</p>
+                <p class="text-muted">Last Charge – {{ bill.due_date }}</p>
+              </div>
+              <h5>${{ bill.amount }}</h5>
+            </li>
+            {% endfor %}
+          </ul>
+          <a href="#" class="btn btn-success btn-sm mt-3">VIEW ALL</a>
+          {% else %}
+          <p class="text-muted mt-3">Không có hóa đơn sắp hết hạn.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Hàng 2 -->
+    <div class="row mb-4">
+      <!-- Giao dịch gần đây -->
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Giao dịch gần đây</h5>
+            <a
+              href="{{ url_for('views.add_transaction') }}"
+              class="btn btn-success btn-sm"
+              >Thêm</a
+            >
+          </div>
+          {% if transactions %}
+          <ul class="list-unstyled mt-3">
+            {% for transaction in transactions %}
+            <li class="d-flex justify-content-between align-items-center">
+              <div>
+                <p>{{ transaction.description }}</p>
+                <p class="text-muted">{{ transaction.transaction_date }}</p>
+              </div>
+              <h5>${{ transaction.amount }}</h5>
+            </li>
+            {% endfor %}
+          </ul>
+          <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-light">Previous</button>
+            <button class="btn btn-light">Next</button>
+          </div>
+          {% else %}
+          <p class="text-muted mt-3">Không có giao dịch gần đây.</p>
+          {% endif %}
+        </div>
+      </div>
+      <!-- Thống kê -->
+      <div class="col-md-8">
+        <div class="card p-3">
+          <h5>Thống kê</h5>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p>Weekly Comparison</p>
+            <select class="form-select form-select-sm" style="width: 150px">
+              <option selected>Weekly</option>
+              <option>Monthly</option>
+              <option>Yearly</option>
+            </select>
+          </div>
+          <canvas id="weeklyChart" height="100"></canvas>
+          <div class="d-flex justify-content-end mt-3">
+            <div class="d-flex align-items-center me-3">
+              <span class="legend-dot bg-success me-2"></span>
+              <p class="text-muted">This week</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="legend-dot bg-light me-2"></span>
+              <p class="text-muted">Last week</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hàng 3 -->
+    <div class="row mb-4">
+      <!-- Phân tích chi phí -->
+      <div class="col-md-12">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Phân tích chi phí</h5>
+            <a
+              href="{{ url_for('views.add_category') }}"
+              class="btn btn-success btn-sm"
+              >Thêm danh mục</a
+            >
+          </div>
+          <p class="text-muted">*Số sản phẩm vô hình trung</p>
+          <div class="row mt-3">
+            {% for item in expense_analysis %}
+            <div class="col-md-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p>{{ item.category_name }}</p>
+                  <p class="text-muted">${{ item.total }}</p>
+                </div>
+                <div>
+                  <p class="text-success">
+                    15% <i class="fas fa-arrow-up"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script để vẽ biểu đồ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('weeklyChart').getContext('2d');
+  const weeklyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: {{ labels|tojson }},
+          datasets: [
+              {
+                  label: 'This week',
+                  data: {{ this_week_data|tojson }},
+                  backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                  borderColor: 'rgba(40, 167, 69, 1)',
+                  borderWidth: 1
+              },
+              {
+                  label: 'Last week',
+                  data: {{ last_week_data|tojson }},
+                  backgroundColor: 'rgba(200, 200, 200, 0.2)',
+                  borderColor: 'rgba(200, 200, 200, 1)',
+                  borderWidth: 1
+              }
+          ]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      callback: function(value) {
+                          return '$' + value / 1000 + 'K';
+                      }
+                  }
+              }
+          },
+          plugins: {
+              legend: {
+                  display: false
+              }
+          }
+      }
+  });
+</script>
+{% endblock %}
