@@ -21,7 +21,6 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Flask specific
-*.log
 instance/
 .wsgi.py.swp
 
@@ -32,8 +31,6 @@ instance/
 .DS_Store
 
 # Python dependencies
-requirements.txt
-Pipfile
 Pipfile.lock
 
 # Docker files (if using Docker)
