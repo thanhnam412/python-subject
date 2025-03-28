@@ -1,74 +1,84 @@
 from flask import Flask
-from flask_login import LoginManager
-import mysql.connector
-from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flasgger import Swagger
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_caching import Cache
+from dotenv import load_dotenv
+import os
+import logging
+from logging.handlers import RotatingFileHandler
 
-class User:
-    def __init__(self, user_id, username, email):
-        self.id = user_id
-        self.username = username
-        self.email = email
-
-    def get_id(self):
-        return str(self.id)
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
+db = SQLAlchemy()
+migrate = Migrate()
+jwt = JWTManager()
+limiter = Limiter(key_func=get_remote_address)
+cache = Cache()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your-secret-key'
-    app.config['MYSQL_HOST'] = 'localhost'
-    app.config['MYSQL_USER'] = 'root'
-    app.config['MYSQL_PASSWORD'] = '757805'
-    app.config['MYSQL_DB'] = 'QLCT'
 
-    def get_db_connection():
-        return mysql.connector.connect(
-            host=app.config['MYSQL_HOST'],
-            user=app.config['MYSQL_USER'],
-            password=app.config['MYSQL_PASSWORD'],
-            database=app.config['MYSQL_DB']
-        )
+    load_dotenv()
 
-    app.get_db_connection = get_db_connection
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///expense_tracker.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your-jwt-secret-key')
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+    app.config['CACHE_TYPE'] = 'simple'
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    login_manager.login_view = 'views.login'
+    db.init_app(app)
+    migrate.init_app(app, db)
+    jwt.init_app(app)
+    limiter.init_app(app)
+    cache.init_app(app)
+    CORS(app)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        connection = app.get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
-        user = cursor.fetchone()
-        cursor.close()
-        connection.close()
-        if user:
-            return User(user['user_id'], user['username'], user['email'])
-        return None
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/expense_tracker.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Expense Tracker startup')
 
-    from views import views
-    app.register_blueprint(views)
+    # Configure Swagger
+    swagger_config = {
+        "title": "Expense Tracker API",
+        "description": "API for managing expenses, budgets, bills, and shared expenses.",
+        "version": "1.0.0",
+        "headers": [],
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter your Bearer token in the format: Bearer <token>"
+            }
+        },
+        "specs": [
+            {
+                "endpoint": "apispec",
+                "route": "/apispec.json",
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True
+            }
+        ],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/apidocs/"
+    }
+    Swagger(app, config=swagger_config)
 
-    @app.template_filter('format_currency')
-    def format_currency(value):
-        return "{:,.2f}".format(float(value))
-
-    @app.template_filter('datetimeformat')
-    def datetimeformat(value):
-        if value == 'now':
-            return datetime.now().strftime('%b %d, %Y')
-        return value.strftime('%b %d, %Y')
+    from .auth import auth as auth_blueprint
+    from .views import api as api_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(api_blueprint, url_prefix='/api')
 
     return app
