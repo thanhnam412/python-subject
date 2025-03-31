@@ -2,6 +2,8 @@ from flask import Flask
 from markupsafe import escape
 from init import get_db_connection
 
+import routes
+
 
 app = Flask(__name__)
 conn = get_db_connection()
