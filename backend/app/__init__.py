@@ -1,12 +1,31 @@
 from flask import Flask
 from markupsafe import escape
-from init import get_db_connection
-
+import os
 import routes
+
+host = "localhost"
+
+try:
+    be_port = os.environ["BE_PORT"]
+    db_port = os.environ["DB_PORT"]
+    db_user = os.environ["DB_USER"]
+    db_name = os.environ["DB_NAME"]
+    db_password = ""
+except:
+    be_port = "8080"
+    db_port = "5432"
+    db_user = "cps"
+    db_name = "test"
+    db_password = ""
 
 
 app = Flask(__name__)
-conn = get_db_connection()
+
+
+def create_app():
+    app = Flask(__name__)
+
+    return app
 
 
 @app.route("/")
@@ -19,15 +38,29 @@ def show_user_profile(username):
     return f"User {escape(username)}"
 
 
-# @app.route('/')
-# def index():
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     cur.execute("SELECT * FROM users;")
-#     users = cur.fetchall()
-#     cur.close()
-#     conn.close()
-#     return f"Danh sách người dùng: {users}"
+import mysql.connector
+
+
+class User:
+    def __init__(self, user_id, username, email):
+        self.id = user_id
+        self.username = username
+        self.email = email
+
+    def get_id(self):
+        return str(self.id)
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
 
 
 if __name__ == "__main__":
