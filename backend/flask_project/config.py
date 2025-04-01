@@ -1,19 +1,17 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
-    MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'root'  
-    MYSQL_PASSWORD = '757805'  
-    MYSQL_DB = 'QLCT'
-    MYSQL_CURSORCLASS = 'DictCursor'
-
-    SECRET_KEY = os.environ.get('KEY', 'your-secret-key')
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_USER = os.getenv("MYSQL_USER", "root")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+    if not MYSQL_PASSWORD:
+        raise ValueError("MYSQL_PASSWORD is not set in the environment variables")
+    MYSQL_DB = os.getenv("MYSQL_DB", "QLCT")
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DB}"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = 'your-jwt-secret-key'
-    SESSION_COOKIE_SECURE = False 
-
-    SWAGGER = {
-        "title": "Expense Tracker API",
-        "uiversion": 3
-    }
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY is not set in the environment variables")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-jwt-secret-key")
