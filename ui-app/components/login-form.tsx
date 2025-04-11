@@ -1,18 +1,24 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "./ui/checkbox";
+import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [] = useState();
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="text-center text-[32px] text-[#299D91] font-semibold">
-        Đăng nhập vào tài khoản của bạn
-      </div>
+      <p className="text-center text-[32px] text-[#299D91] font-bold">
+        Đăng nhập
+      </p>
       <Card>
         <CardContent>
           <form>
@@ -30,6 +36,10 @@ export function LoginForm({
                 <div className="grid gap-3">
                   <Label htmlFor="password">Mật khẩu</Label>
                   <Input id="password" type="password" required />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="terms" />
+                  <Label htmlFor="terms">Keep me signed in</Label>
                 </div>
                 <Button type="submit" className="w-full">
                   Login
