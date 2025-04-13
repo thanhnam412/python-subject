@@ -13,18 +13,20 @@ debt_bp = Blueprint("debt", __name__)
 def create_debt():
     user_id = get_jwt_identity()
     data = request.get_json()
+    print(user_id)
 
-    debt = Debt(
-        amount=data["amount"],
-        description=data.get("description"),
-        interest_rate=data["interest_rate"],
-        due_date=datetime.strptime(data["due_date"], "%Y-%m-%d").date(),
-        user_id=user_id,
-    )
+    # debt = Debt(
+    #     amount=data["amount"],
+    #     description=data.get("description"),
+    #     interest_rate=data["interest_rate"],
+    #     due_date=datetime.strptime(data["due_date"], "%Y-%m-%d").date(),
+    #     user_id='1',
+    # )
 
-    db.session.add(debt)
-    db.session.commit()
+    # db.session.add(debt)
+    # db.session.commit()
 
+    return jsonify({"hi": 1}), 201
     return jsonify(debt.to_dict()), 201
 
 

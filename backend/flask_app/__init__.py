@@ -14,24 +14,34 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:3000"}},
+        supports_credentials=True,
+    )
 
     # Initialize extensions
     init_db(app)
-    
+
     # Configure JWT
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 86400))
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+    app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = int(
+        os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 86400)
+    )
     JWTManager(app)
-    
+
     # Register blueprints
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(expense_bp)
     app.register_blueprint(income_bp)
     app.register_blueprint(debt_bp)
     app.register_blueprint(summary_bp)
     app.register_blueprint(prediction_bp)
-    
+
     return app
