@@ -10,21 +10,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { client } from "@/services/api";
+import { useAuth } from "@/context/AuthProvider";
+
+import { postCreateDebts } from "@/services/debts";
 import { ChangeEvent } from "react";
 
 export default function Home() {
   const onUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e);
   };
+  const auth = useAuth();
 
   const onGet = async () => {
     try {
-      await client.post("/auth/signup", {
-        username: "string",
-        email: "exam_1@gmail.com",
-        password: "12345",
-      });
+      const data = await postCreateDebts(auth);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }

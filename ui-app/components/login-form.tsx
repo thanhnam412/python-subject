@@ -6,13 +6,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "./ui/checkbox";
-import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [] = useState();
+  const onGet = async () => {
+    try {
+      const data = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: "12345",
+          username: "string",
+        }),
+      });
+      if (data.ok) {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -21,7 +36,8 @@ export function LoginForm({
       </p>
       <Card>
         <CardContent>
-          <form>
+          <button onClick={() => onGet()}>CLick</button>
+          <form action={() => console.log(1)}>
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-3">
@@ -41,6 +57,7 @@ export function LoginForm({
                   <Checkbox id="terms" />
                   <Label htmlFor="terms">Keep me signed in</Label>
                 </div>
+
                 <Button type="submit" className="w-full">
                   Login
                 </Button>

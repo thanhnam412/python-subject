@@ -1,8 +1,10 @@
+"use client";
+
 import ContainerWrapper from "@/components/layouts/ContainerWrapper";
 import { LoginForm } from "@/components/login-form";
 import Image from "next/image";
 
-export default function LoginPage() {
+export default function Login() {
   return (
     <ContainerWrapper className="grid grid-cols-11">
       <LoginForm className="col-span-5 h-full flex flex-col justify-center p-[100px]" />

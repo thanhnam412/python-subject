@@ -5,12 +5,12 @@ export const createAxiosClient = () => {
     baseURL: "http://localhost:8080",
     headers: {
       "Content-Type": "application/json"
-    }
+    },
+    withCredentials: true
   });
 
   client.interceptors.request.use(
     (config) => {
-      console.log(config)
       return config;
     },
     (error) => {
