@@ -5,23 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "./ui/checkbox";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useLogin } from "@/reactquery/hook/auth";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const onGet = async () => {
+  const [data, setData] = useState<{ username: string; password: string }>({
+    username: "",
+    password: "",
+  });
+  const { mutateAsync: login } = useLogin();
+  const auth = useAuth();
+
+  const handleLogin = async () => {
+    if (auth) {
+      return;
+    }
     try {
-      const data = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          password: "12345",
-          username: "string",
-        }),
-      });
-      if (data.ok) {
+      const result = await login(data);
+      if (result.data) {
         window.location.href = "/";
       }
     } catch (error) {
@@ -36,29 +41,34 @@ export function LoginForm({
       </p>
       <Card>
         <CardContent>
-          <button onClick={() => onGet()}>CLick</button>
-          <form action={() => console.log(1)}>
+          <form action={() => {}}>
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-3">
                   <Label htmlFor="username">Tên đăng nhập</Label>
                   <Input
+                    onChange={(e) =>
+                      setData({ ...data, username: e.target.value })
+                    }
                     id="username"
                     type="text"
-                    placeholder="m@example.com"
+                    placeholder="username"
                     required
                   />
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="password">Mật khẩu</Label>
-                  <Input id="password" type="password" required />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" />
-                  <Label htmlFor="terms">Keep me signed in</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    onChange={(e) =>
+                      setData({ ...data, password: e.target.value })
+                    }
+                  />
                 </div>
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" onClick={handleLogin} className="w-full">
                   Login
                 </Button>
               </div>

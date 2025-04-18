@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask_app.models.user import User
 from flask_app.database import db
-from flask_jwt_extended import create_access_token, get_csrf_token
+from flask_jwt_extended import create_access_token, get_csrf_token, jwt_required
 from marshmallow import ValidationError
 from ..schemas.auth import SignUpSchema, LoginSchema
 
@@ -62,3 +62,12 @@ def login():
         return response, 200
 
     return jsonify({"error": "Invalid username or password"}), 401
+
+
+@auth_bp.route("/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    response = jsonify({"message": "Successfully logged out"})
+    response.delete_cookie("access_token_cookie")
+    response.delete_cookie("csrf_token_cookie")
+    return response, 200

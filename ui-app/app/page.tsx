@@ -1,35 +1,13 @@
 "use client";
-
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/context/AuthProvider";
-
-import { postCreateDebts } from "@/services/debts";
-import { ChangeEvent } from "react";
 
 export default function Home() {
-  const onUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-  };
-  const auth = useAuth();
-
-  const onGet = async () => {
-    try {
-      const data = await postCreateDebts(auth);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -47,11 +25,6 @@ export default function Home() {
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
         </div>
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="picture">Picture</Label>
-          <Input id="picture" type="file" onChange={onUpload} />
-        </div>
-        <Button onClick={() => onGet()}>Get</Button>
       </SidebarInset>
     </SidebarProvider>
   );
