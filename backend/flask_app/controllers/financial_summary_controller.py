@@ -14,7 +14,7 @@ def get_summaries():
     user_id = get_jwt_identity()
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
-    period = request.args.get("period", "month")  # day, week, month
+    period = request.args.get("period", "month")
 
     today = datetime.now(timezone.utc).date()
 

@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
-from flask_app.models.finance import Expense
+from flask_app.models.finance import Expense, ExpenseCategory
 from flask_app.database import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import func
 from datetime import datetime, timedelta, timezone
+from marshmallow import ValidationError
+from ..schemas.finance import ExpenseSchema
 
 expense_bp = Blueprint("expense", __name__)
 
@@ -14,10 +16,32 @@ def create_expense():
     user_id = get_jwt_identity()
     data = request.get_json()
 
+    # Validate request data
+    expense_schema = ExpenseSchema()
+    try:
+        validated_data = expense_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "messages": err.messages}), 400
+
+    # Handle category
+    category_name = validated_data["category"]
+    # Find or create ExpenseCategory
+    category = ExpenseCategory.query.filter_by(name=category_name).first()
+    if not category:
+        category = ExpenseCategory(name=category_name, description=f"Category for {category_name}")
+        db.session.add(category)
+        db.session.flush()
+    
+    # Set expense date if provided
+    expense_date = datetime.now(timezone.utc)
+    if "date" in validated_data:
+        expense_date = validated_data["date"]
+    
     expense = Expense(
-        amount=data["amount"],
-        description=data["description"],
-        category=data["category"],
+        amount=validated_data["amount"],
+        description=validated_data["description"],
+        category_id=category.id,
+        date=expense_date,
         user_id=user_id,
     )
 
@@ -56,9 +80,10 @@ def get_statistics():
 
     # Get expenses by category
     by_category = (
-        db.session.query(Expense.category, func.sum(Expense.amount).label("total"))
-        .filter_by(user_id=user_id)
-        .group_by(Expense.category)
+        db.session.query(ExpenseCategory.name, func.sum(Expense.amount).label("total"))
+        .join(Expense, Expense.category_id == ExpenseCategory.id)
+        .filter(Expense.user_id == user_id)
+        .group_by(ExpenseCategory.name)
         .all()
     )
 

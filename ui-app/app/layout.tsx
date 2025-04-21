@@ -4,6 +4,7 @@ import "./globals.css";
 import ContainerWrapper from "@/components/layouts/ContainerWrapper";
 import Providers from "./providers";
 import { cookies } from "next/headers";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default async function RootLayout({
         <ContainerWrapper>
           <Providers signature={signature}>{children}</Providers>
         </ContainerWrapper>
+        <Toaster />
       </body>
     </html>
   );

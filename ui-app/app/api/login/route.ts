@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     httpOnly: true,
     sameSite: 'strict',
     path: '/',
-    maxAge: 60 * 5
+    maxAge: 60 * 60 * 24
   });
 
   const setCookieHeader = backendRes?.headers.get('set-cookie');
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       sameSite: 'strict',
       path: '/',
-      maxAge: 60 * 5
+      maxAge: 60 * 60 * 24
     });
   }
 

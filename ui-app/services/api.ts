@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const createAxiosClient = () => {
   const client = axios.create({
@@ -19,7 +19,13 @@ export const createAxiosClient = () => {
   );
 
   client.interceptors.response.use(
-    (response) => response
+    (response) => response,
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
+    }
   );
 
   return client;

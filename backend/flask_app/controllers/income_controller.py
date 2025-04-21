@@ -4,6 +4,8 @@ from flask_app.database import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import func
 from datetime import datetime, timedelta, timezone
+from marshmallow import ValidationError
+from ..schemas.finance import IncomeSchema, IncomeStatisticsSchema
 
 income_bp = Blueprint("income", __name__)
 
@@ -14,12 +16,29 @@ def create_income():
     user_id = get_jwt_identity()
     data = request.get_json()
 
-    income = Income(amount=data["amount"], source=data["source"], user_id=user_id)
+    # Validate request data
+    income_schema = IncomeSchema()
+    try:
+        validated_data = income_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "messages": err.messages}), 400
+
+    # Create Income object with validated data
+    income = Income(
+        amount=validated_data["amount"], 
+        source=validated_data["source"], 
+        date=validated_data.get("date"),
+        user_id=user_id
+    )
 
     db.session.add(income)
     db.session.commit()
 
-    return jsonify(income.to_dict()), 201
+    # Add fields expected by frontend but not in the model
+    response_data = income.to_dict()
+    response_data["description"] = validated_data.get("description")
+    
+    return jsonify(response_data), 201
 
 
 @income_bp.route("/incomes", methods=["GET"])
@@ -27,7 +46,15 @@ def create_income():
 def get_incomes():
     user_id = get_jwt_identity()
     incomes = Income.query.filter_by(user_id=user_id).all()
-    return jsonify([income.to_dict() for income in incomes])
+    
+    # Add expected fields to each income
+    items = []
+    for income in incomes:
+        item = income.to_dict()
+        item["description"] = None  # Add field expected by frontend
+        items.append(item)
+        
+    return jsonify(items)
 
 
 @income_bp.route("/incomes/<int:income_id>", methods=["GET"])
@@ -35,7 +62,12 @@ def get_incomes():
 def get_income(income_id):
     user_id = get_jwt_identity()
     income = Income.query.filter_by(id=income_id, user_id=user_id).first_or_404()
-    return jsonify(income.to_dict())
+    
+    # Add expected fields to the response
+    response_data = income.to_dict()
+    response_data["description"] = None
+    
+    return jsonify(response_data)
 
 
 @income_bp.route("/incomes/statistics", methods=["GET"])
@@ -58,7 +90,7 @@ def get_statistics():
     )
 
     # Get monthly income
-    month_ago = datetime.now(timezone.utc)() - timedelta(days=30)
+    month_ago = datetime.now(timezone.utc) - timedelta(days=30)
     monthly = (
         db.session.query(
             func.date(Income.date).label("date"), func.sum(Income.amount).label("total")
@@ -68,10 +100,13 @@ def get_statistics():
         .all()
     )
 
-    return jsonify(
-        {
-            "total_income": total,
-            "by_source": [{"source": s, "total": t} for s, t in by_source],
-            "monthly_income": [{"date": str(d), "total": t} for d, t in monthly],
-        }
-    )
+    # Prepare statistics data
+    statistics_data = {
+        "total_income": total,
+        "by_source": [{"source": s, "total": t} for s, t in by_source],
+        "monthly_income": [{"date": str(d), "total": t} for d, t in monthly],
+    }
+
+    # Serialize using schema
+    statistics_schema = IncomeStatisticsSchema()
+    return jsonify(statistics_schema.dump(statistics_data))

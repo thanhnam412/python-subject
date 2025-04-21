@@ -74,7 +74,7 @@ export function LoginForm({
               </div>
               <div className="text-center text-sm">
                 Nếu bạn chưa có tài khoảng{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/signup" className="underline underline-offset-4">
                   Đăng ký
                 </a>
               </div>

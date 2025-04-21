@@ -10,6 +10,14 @@ export const useLogin = () => {
   })
 }
 
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: AuthServices.postRegister,
+    onError: console.log
+  })
+}
+
+
 export const useLogout = () => {
   const auth = useAuth()
   return useMutation({
