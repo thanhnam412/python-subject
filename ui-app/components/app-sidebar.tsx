@@ -6,7 +6,6 @@ import {
   Command,
   GalleryVerticalEnd,
   Map,
-  ChartNoAxesGantt,
   Plus,
 } from "lucide-react";
 
@@ -68,11 +67,6 @@ const data = {
     },
   ],
   projects: [
-    {
-      name: "Tổng quan",
-      url: "/dashboard/overview",
-      icon: ChartNoAxesGantt,
-    },
     {
       name: "Cá nhân",
       url: "/dashboard/personal",

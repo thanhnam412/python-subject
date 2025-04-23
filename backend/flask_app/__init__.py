@@ -6,14 +6,10 @@ from flask_app.controllers.auth_controller import auth_bp
 from flask_app.controllers.expense_controller import expense_bp
 from flask_app.controllers.income_controller import income_bp
 from flask_app.controllers.debt_controller import debt_bp
-from flask_app.controllers.financial_summary_controller import summary_bp
-from flask_app.controllers.expense_prediction_controller import prediction_bp
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
-
 
 def create_app():
     app = Flask(__name__)
@@ -23,10 +19,8 @@ def create_app():
         supports_credentials=True,
     )
 
-    # Initialize extensions
     init_db(app)
 
-    # Configure JWT
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
@@ -36,12 +30,9 @@ def create_app():
     )
     JWTManager(app)
 
-    # Register blueprints
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(expense_bp)
     app.register_blueprint(income_bp)
     app.register_blueprint(debt_bp)
-    app.register_blueprint(summary_bp)
-    app.register_blueprint(prediction_bp)
 
     return app

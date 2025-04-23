@@ -47,18 +47,15 @@ def login():
 
     if user and user.check_password(data["password"]):
         access_token = create_access_token(identity=str(user.id))
-        toke = get_csrf_token(access_token)
-        response = make_response(
-            jsonify({"access_token": access_token, "user": user.to_dict()})
-        )
+        token = get_csrf_token(access_token)
+        response = make_response(jsonify({"access_token": access_token}))
         response.set_cookie(
             "csrf_token_cookie",
-            toke,
+            token,
             httponly=True,
             samesite="Strict",
             path="/",
         )
-        print(toke)
         return response, 200
 
     return jsonify({"error": "Invalid username or password"}), 401

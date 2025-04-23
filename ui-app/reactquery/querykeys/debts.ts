@@ -1,6 +1,4 @@
-export interface DebtFilters {
-  page?: number;
-}
+export type DebtFilters = Record<string, string>
 
 export const DebtQueryKeys = {
   all: ["debts"],
@@ -8,5 +6,4 @@ export const DebtQueryKeys = {
   list: (filters?: DebtFilters) => [...DebtQueryKeys.lists(), { ...filters }],
   details: () => [...DebtQueryKeys.all, "detail"],
   detail: (id: number) => [...DebtQueryKeys.details(), id],
-  statistics: () => [...DebtQueryKeys.all, "statistics"],
 };

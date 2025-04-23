@@ -7,7 +7,7 @@ export const useIncomes = (filters?: IncomeFilters) => {
   const auth = useAuth();
   return useQuery({
     queryKey: IncomeQueryKeys.list(filters),
-    queryFn: () => IncomeServices.getIncomes(auth),
+    queryFn: () => IncomeServices.getIncomes(auth, filters),
     enabled: !!auth,
   });
 };
@@ -24,9 +24,9 @@ export const useIncomeDetail = (id: number) => {
 export const useCreateIncome = () => {
   const queryClient = useQueryClient();
   const auth = useAuth();
-  
+
   return useMutation({
-    mutationFn: (params: IncomeServices.IncomeCreateParams) => 
+    mutationFn: (params: IncomeServices.IncomeCreateParams) =>
       IncomeServices.createIncome(params, auth),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: IncomeQueryKeys.lists() });
@@ -34,12 +34,3 @@ export const useCreateIncome = () => {
     onError: console.log,
   });
 };
-
-export const useIncomeStatistics = () => {
-  const auth = useAuth();
-  return useQuery({
-    queryKey: IncomeQueryKeys.statistics(),
-    queryFn: () => IncomeServices.getIncomeStatistics(auth),
-    enabled: !!auth,
-  });
-}; 

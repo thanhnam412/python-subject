@@ -1,8 +1,4 @@
-export interface IncomeFilters {
-  startDate?: string;
-  endDate?: string;
-  source?: string;
-}
+export type IncomeFilters = Record<string, string>
 
 export const IncomeQueryKeys = {
   all: ["incomes"],
@@ -10,5 +6,4 @@ export const IncomeQueryKeys = {
   list: (filters?: IncomeFilters) => [...IncomeQueryKeys.lists(), { ...filters }],
   details: () => [...IncomeQueryKeys.all, "detail"],
   detail: (id: number) => [...IncomeQueryKeys.details(), id],
-  statistics: () => [...IncomeQueryKeys.all, "statistics"],
 }; 

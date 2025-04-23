@@ -7,7 +7,7 @@ export const useExpenses = (filters?: ExpenseFilters) => {
   const auth = useAuth();
   return useQuery({
     queryKey: ExpenseQueryKeys.list(filters),
-    queryFn: () => ExpenseServices.getExpenses(auth),
+    queryFn: () => ExpenseServices.getExpenses(auth, filters),
     enabled: !!auth,
   });
 };
@@ -24,9 +24,9 @@ export const useExpenseDetail = (id: number) => {
 export const useCreateExpense = () => {
   const queryClient = useQueryClient();
   const auth = useAuth();
-  
+
   return useMutation({
-    mutationFn: (params: ExpenseServices.ExpenseCreateParams) => 
+    mutationFn: (params: ExpenseServices.ExpenseCreateParams) =>
       ExpenseServices.createExpense(params, auth),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ExpenseQueryKeys.lists() });
@@ -34,22 +34,3 @@ export const useCreateExpense = () => {
     onError: console.log,
   });
 };
-
-export const useExpenseStatistics = () => {
-  const auth = useAuth();
-  return useQuery({
-    queryKey: ExpenseQueryKeys.statistics(),
-    queryFn: () => ExpenseServices.getExpenseStatistics(auth),
-    enabled: !!auth,
-  });
-};
-
-export const useExpenseCategories = () => {
-  const auth = useAuth();
-  return useQuery({
-    queryKey: ExpenseQueryKeys.categories(),
-    queryFn: () => ExpenseServices.getExpenseCategories(auth),
-    enabled: !!auth,
-    staleTime: 5 * 60 * 1000,
-  });
-}; 

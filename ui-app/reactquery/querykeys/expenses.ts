@@ -1,8 +1,4 @@
-export interface ExpenseFilters {
-  startDate?: string;
-  endDate?: string;
-  category?: string;
-}
+export type ExpenseFilters = Record<string, string>
 
 export const ExpenseQueryKeys = {
   all: ["expenses"],
@@ -10,6 +6,4 @@ export const ExpenseQueryKeys = {
   list: (filters?: ExpenseFilters) => [...ExpenseQueryKeys.lists(), { ...filters }],
   details: () => [...ExpenseQueryKeys.all, "detail"],
   detail: (id: number) => [...ExpenseQueryKeys.details(), id],
-  statistics: () => [...ExpenseQueryKeys.all, "statistics"],
-  categories: () => [...ExpenseQueryKeys.all, "categories"],
 }; 

@@ -1,54 +1,83 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Card, CardTitle } from "@/components/ui/card";
 
-interface Props {
+interface DebtCardProps {
   item: {
     id: number;
+    title: string;
     description: string;
     amount: number;
     due_date: string;
     interest_rate: number;
-    is_paid: boolean;
   };
 }
 
-export function ItemCard({ item }: Props) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(`/dashboard/debt/${item.id.toString()}`);
-  };
-
+export function ItemDebtCard({ item }: DebtCardProps) {
   return (
-    <Card className="w-full shadow-md hover:cursor-pointer hover:bg-primary/10 duration-100" onClick={handleClick}>
-      <CardHeader className="flex flex-row justify-between items-center">
-        <CardTitle className="text-base">{item.description}</CardTitle>
-        <Badge variant={item.is_paid ? "default" : "destructive"}>
-          {item.is_paid ? (
-            <span className="flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> Đã thanh toán
-            </span>
-          ) : (
-            <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" /> Chưa thanh toán
-            </span>
-          )}
-        </Badge>
-      </CardHeader>
-      <CardContent className="text-sm space-y-1">
-        <p>
-          <strong>Số tiền:</strong> {item.amount.toLocaleString()}₫
-        </p>
-        <p>
-          <strong>Ngày đáo hạn:</strong>{" "}
-          {new Date(item.due_date).toLocaleDateString()}
-        </p>
-        <p>
-          <strong>Lãi suất:</strong> {item.interest_rate}%
-        </p>
-      </CardContent>
+    <Card className="w-full shadow-md mb-4">
+      <div className="px-[24px]">
+        <CardTitle className="text-base">Tên khoản nợ: {item.title}</CardTitle>
+        <CardTitle className="text-base">Miêu tả: {item.description}</CardTitle>
+        <CardTitle className="text-base flex flex-nowrap gap-[4px]">
+          Số tiền nợ: <p className="text-red-500">{item.amount}</p>
+        </CardTitle>
+        <CardTitle className="text-base">
+          Ngày đáo hạn: {item.due_date}
+        </CardTitle>
+        <CardTitle className="text-base">Id: {item.id}</CardTitle>
+        <CardTitle className="text-base">
+          Lãi suất: {item.interest_rate}%
+        </CardTitle>
+      </div>
+    </Card>
+  );
+}
+
+interface IncomeCard {
+  item: {
+    id: number;
+    amount: number;
+    date: string;
+    source: string;
+  };
+}
+
+export function ItemIncomeCard({ item }: IncomeCard) {
+  return (
+    <Card className="w-full shadow-md">
+      <div className="px-[24px]">
+        <CardTitle className="text-base">Nguồn: {item.source}</CardTitle>
+        <CardTitle className="text-base flex flex-nowrap gap-[4px]">
+          Số tiền: <p className="text-green-500">{item.amount}</p>
+        </CardTitle>
+        <CardTitle className="text-base">Ngày nhận: {item.date}</CardTitle>
+        <CardTitle className="text-base">Id: {item.id}</CardTitle>
+      </div>
+    </Card>
+  );
+}
+
+interface ExpenseCard {
+  item: {
+    id: number;
+    title: string;
+    description: string;
+    amount: number;
+    date: string;
+  };
+}
+
+export function ItemExpenseCard({ item }: ExpenseCard) {
+  return (
+    <Card className="w-full shadow-md">
+      <div className="px-[24px]">
+        <CardTitle className="text-base">Tên: {item.title}</CardTitle>
+        <CardTitle className="text-base">Miêu tả: {item.description}</CardTitle>
+        <CardTitle className="text-base flex flex-nowrap gap-[4px]">
+          Số tiền: <p className="text-red-500">{item.amount}</p>
+        </CardTitle>
+        <CardTitle className="text-base">Ngày chi: {item.date}</CardTitle>
+        <CardTitle className="text-base">Id: {item.id}</CardTitle>
+      </div>
     </Card>
   );
 }
