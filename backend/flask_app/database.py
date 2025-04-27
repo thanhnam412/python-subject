@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 import mysql.connector
 from mysql.connector import Error
 import os
